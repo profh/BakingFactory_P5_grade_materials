@@ -25,41 +25,24 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    expected_body = [
-      {"id"=>1, "date"=>"2019-04-30", "grandTotal"=>5.25, "customerName"=>"Egan, Alex", "itemCount"=>1},
-      {"id"=>2, "date"=>"2019-05-02", "grandTotal"=>5.25, "customerName"=>"Egan, Alex", "itemCount"=>1},
-      {"id"=>3, "date"=>"2019-05-05", "grandTotal"=>22.5, "customerName"=>"Egan, Alex", "itemCount"=>2},
-      {"id"=>4, "date"=>"2019-05-01", "grandTotal"=>5.5, "customerName"=>"Freeman, Melanie", "itemCount"=>1},
-      {"id"=>5, "date"=>"2019-05-05", "grandTotal"=>5.5, "customerName"=>"Freeman, Melanie", "itemCount"=>1},
-      {"id"=>6, "date"=>"2019-05-05", "grandTotal"=>16.5, "customerName"=>"Corletti, Anthony", "itemCount"=>3},
-      {"id"=>7, "date"=>"2019-05-05", "grandTotal"=>11.0, "customerName"=>"Flood, Ryan", "itemCount"=>1}
-    ]
 
     get api_orders_url, as: :json
     assert_response :success
-    assert_equal(expected_body, response.parsed_body)
+    assert_equal(7, response.parsed_body.size)
 
     # change record first_name and observe change
     @alexe.first_name = "Alec"
     @alexe.save!
-    expected_body = [
-      {"id"=>1, "date"=>"2019-04-30", "grandTotal"=>5.25, "customerName"=>"Egan, Alec", "itemCount"=>1},
-      {"id"=>2, "date"=>"2019-05-02", "grandTotal"=>5.25, "customerName"=>"Egan, Alec", "itemCount"=>1},
-      {"id"=>3, "date"=>"2019-05-05", "grandTotal"=>22.5, "customerName"=>"Egan, Alec", "itemCount"=>2},
-      {"id"=>4, "date"=>"2019-05-01", "grandTotal"=>5.5, "customerName"=>"Freeman, Melanie", "itemCount"=>1},
-      {"id"=>5, "date"=>"2019-05-05", "grandTotal"=>5.5, "customerName"=>"Freeman, Melanie", "itemCount"=>1},
-      {"id"=>6, "date"=>"2019-05-05", "grandTotal"=>16.5, "customerName"=>"Corletti, Anthony", "itemCount"=>3},
-      {"id"=>7, "date"=>"2019-05-05", "grandTotal"=>11.0, "customerName"=>"Flood, Ryan", "itemCount"=>1}
-    ]
+    alexe_o1 = {"id"=>1, "date"=>@alexe_o1.date.to_s, "grandTotal"=>5.25, "customerName"=>"Egan, Alec", "itemCount"=>1}
 
     get api_orders_url, as: :json
     assert_response :success
-    assert_equal(expected_body, response.parsed_body)
+    assert_equal(alexe_o1, response.parsed_body.find{|order| order["id"] == 1})
   end
 
-  test "should show customer" do
+  test "should show order" do
     expected_body = {
-      "id" => 1, "date" => "2019-04-30", "grandTotal" => 5.25, "customer" => {
+      "id" => 1, "date" => @alexe_o1.date.to_s, "grandTotal" => 5.25, "customer" => {
         "id" => 1, "first_name" => "Alex", "last_name" => "Egan", "email" => @alexe.email, "phone" => @alexe.phone, "user_id" => 1, "active" => true
       }, "address" => {
         "id" => 5, "customer_id" => 1, "is_billing" => false, "recipient" => "Jeff Egan", "street_1" => "4000 Forbes Ave", "street_2" => nil, "city" => "Pittsburgh", "state" => "PA", "zip" => "15212", "active" => true
