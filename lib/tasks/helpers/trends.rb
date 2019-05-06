@@ -86,7 +86,7 @@ module Populator
 
       puts "Creating a special set of orders for Bruce Wayne this month..."
       count = 0
-      customer = Customer.first
+      customer = Customer.where(last_name: "Wayne", first_name: "Bruce").first
       billing = FactoryBot.create(:address, customer: customer, 
         recipient: "Bruce Wayne",
         street_1: "One Gotham Mansion",
